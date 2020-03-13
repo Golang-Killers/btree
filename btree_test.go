@@ -290,6 +290,7 @@ func TestDescendLessOrEqual(t *testing.T) {
 		t.Fatalf("descendlessorequal:\n got: %v\nwant: %v", got, want)
 	}
 }
+
 func TestAscendGreaterOrEqual(t *testing.T) {
 	tr := New(*btreeDegree)
 	for _, v := range perm(100) {
@@ -312,6 +313,32 @@ func TestAscendGreaterOrEqual(t *testing.T) {
 		return true
 	})
 	if want := rang(100)[40:51]; !reflect.DeepEqual(got, want) {
+		t.Fatalf("ascendrange:\n got: %v\nwant: %v", got, want)
+	}
+}
+
+func TestAscendGreaterThan(t *testing.T) {
+	tr := New(*btreeDegree)
+	for _, v := range perm(100) {
+		tr.ReplaceOrInsert(v)
+	}
+	var got []Item
+	tr.AscendGreaterThan(Int(40), func(a Item) bool {
+		got = append(got, a)
+		return true
+	})
+	if want := rang(100)[41:]; !reflect.DeepEqual(got, want) {
+		t.Fatalf("ascendrange:\n got: %v\nwant: %v", got, want)
+	}
+	got = got[:0]
+	tr.AscendGreaterThan(Int(40), func(a Item) bool {
+		if a.(Int) > 50 {
+			return false
+		}
+		got = append(got, a)
+		return true
+	})
+	if want := rang(100)[41:51]; !reflect.DeepEqual(got, want) {
 		t.Fatalf("ascendrange:\n got: %v\nwant: %v", got, want)
 	}
 }
